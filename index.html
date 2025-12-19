@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>LITE 모드 기획 개요</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f6f8;
+      color: #333;
+    }
+
+    /* ===== 페이지 ===== */
+    .page {
+      display: none;
+      height: 100vh;
+      padding: 40px 20px;
+      box-sizing: border-box;
+      overflow: hidden; /* ✅ 추가 */
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+
+    /* ===== 카드 ===== */
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    h1 { font-size: 28px; margin-bottom: 8px; }
+    h2 { font-size: 22px; margin-bottom: 20px; }
+    h3 { font-size: 16px; margin-top: 24px; margin-bottom: 12px; }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 32px;
+    }
+
+    ul { padding-left: 18px; }
+    li { margin-bottom: 6px; }
+
+    .ref-link {
+     color: #4a6cf7;
+     text-decoration: underline;
+     font-weight: 500;
+    }
+
+    .scroll-card {
+      max-height: calc(100vh - 320px);
+      overflow-y: auto;
+    }
+
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      background: #fff;
+      padding-top: 4px;
+      padding-bottom: 12px;
+      z-index: 10;
+    }
+
+    /* ===== 강조 ===== */
+    .highlight {
+      background: #f0f4ff;
+      border-left: 4px solid #4a6cf7;
+      padding: 14px 16px;
+      border-radius: 8px;
+      font-weight: 500;
+      margin: 12px 0;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      margin: 4px 6px 0 0;
+      font-size: 12px;
+      border-radius: 12px;
+      background: #e9ecf1;
+    }
+
+    /* ===== 표 ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #eaeaea;
+      text-align: left;
+    }
+
+    th {
+      background: #fafafa;
+      font-weight: 600;
+    }
+
+    .priority-tag {
+     display: inline-block;
+     margin-left: 6px;
+     padding: 2px 8px;
+     font-size: 11px;
+     font-weight: 600;
+     color: #4a6cf7;
+     background: #eef2ff;
+     border-radius: 10px;
+     vertical-align: middle;
+    }
+
+    /* ===== 인디케이터 ===== */
+    .indicator {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #fff;
+      padding: 12px 16px;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .dots span {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ccc;
+      margin-right: 4px;
+    }
+
+    .dots span.active {
+      background: #4a6cf7;
+    }
+
+    .nav-btn {
+      cursor: pointer;
+      color: #4a6cf7;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    .nav-btn.disabled {
+      color: #aaa;
+      cursor: default;
+    }
+
+    /* ===== 팝업 ===== */
+    .icon {
+     border: none;
+     background: #fff;
+     border-radius: 50%;
+     width: 36px;
+     height: 36px;
+     cursor: pointer;
+     box-shadow: 0 2px 6px rgba(0,0,0,.15);
+    }
+
+    .modal {
+     position: fixed;
+     inset: 0;
+     background: rgba(0,0,0,.45);
+     display: none;
+     align-items: center;
+     justify-content: center;
+     z-index: 999;
+    }
+
+    .modal.show {
+     display: flex;
+    }
+
+    .modal-box {
+     width: 420px;
+     background: #fff;
+      border-radius: 16px;
+      padding: 28px;
+    }
+
+    .mode {
+     display: block;
+     border: 2px solid #eee;
+     border-radius: 12px;
+     padding: 16px;
+     margin-bottom: 12px;
+     cursor: pointer;
+    }
+
+    .mode.active {
+     border-color: #4a6cf7;
+     background: #f3f6ff;
+    }
+
+    .mode input {
+     display: none;
+    }
+
+    .confirm {
+     width: 100%;
+     padding: 12px;
+     border-radius: 10px;
+     border: none;
+     background: #4a6cf7;
+     color: #fff;
+     font-size: 15px;
+     cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<!-- ========== PAGE 1 ========== -->
+<section class="page active">
+  <div class="container">
+    <h1>LITE 모드 기획 개요</h1>
+    
+    <div class="card">
+      <h2>[목표]</h2>
+      <p>
+        본 개편은 복잡한 옵션 구조로 인한 사용자 혼란을 해소하기 위해,
+        핵심 기능 중심의 LITE(이지) 모드를 도입하는 것을 목표로 함
+      </p>
+    </div>
+
+    <div class="card scroll-card">
+      <h2 class="sticky-header">[LITE 모드 도입을 위한 검토 과정]</h2>
+
+      <h3>1) 옵션 전수 검토 방식</h3>
+      <ul>
+        <li>기존 플랫폼의 모든 옵션값 목록화</li>
+        <li>각 옵션에 대해 아래 항목 기준으로 검토</li>
+      </ul>
+
+      <div>
+        <span class="tag">사용 빈도</span>
+        <span class="tag">중요도</span>
+        <span class="tag">UX 복잡도</span>
+        <span class="tag">CS 발생률</span>
+        <span class="tag">자동화 가능성</span>
+        </div>
+
+        <p style="margin-top:12px;">
+         [참고]
+         <a href="https://choijiyoun92-netizen.github.io/aidt-setting-tool/"
+            target="_blank"
+            class="ref-link">
+            옵션 전수 검토 작업 화면 (작업 중)
+          </a>
+        </p>
+
+        <h3>2) LITE 모드 분류 기준</h3>
+        <table>
+          <tr><th>분류</th><th>설명</th></tr>
+          <tr><td>유지</td><td>LITE 모드에서도 반드시 필요한 핵심 옵션</td></tr>
+          <tr><td>자동화</td><td>사용자가 선택하지 않아도 시스템이 자동 설정</td></tr>
+          <tr><td>숨김</td><td>기본 모드에서만 노출</td></tr>
+          <tr><td>제외</td><td>현재 사용성 및 효과 대비 제거 대상</td></tr>
+        </table>
+
+        <h3>3) 기획 방향성</h3>
+        <div class="highlight">
+        LITE 모드는 기능 축소가 아닌, 사용자의 선택을 시스템이 대신해주는 버전으로 정의
+        </div>
+        <ul>
+        <li>복잡한 설정은 기본 모드에서만 제공</li>
+        <li>언제든 버전 전환 가능</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+<!-- ========== PAGE 2 ========== -->
+<section class="page">
+  <div class="container">
+    <div class="card">
+      <h2>[LITE 모드 기획안]</h2>
+
+        <h3>1) LITE 모드 정의</h3>
+        <ul>
+          <li>토글 버튼을 통해 기본 모드 ↔ LITE 모드 전환</li>
+          <li>사용자 선택에 따라 언제든 전환 가능</li>
+          <li>버전 전환 시, 데이터 구조는 동일하게 유지</li>
+        </ul>
+
+        <h3>2) 기본 모드 vs. LITE 모드</h3>
+        <table>
+          <tr><th>항목</th><th>기본 모드</th><th>LITE 모드</th></tr>
+          <tr><td>옵션 수</td><td>다수 노출</td><td>최소화</td></tr>
+          <tr><td>수업 도구
+            <span class="priority-tag">선순위 적용</span>
+          </td><td>자율 설정</td><td>최초 설정값 유지</td></tr>
+          <tr><td>알림
+            <span class="priority-tag">선순위 적용</span>
+          </td><td>자율 설정</td><td>최초 설정값 유지</td></tr>
+          <tr><td>평가/과제 설정
+            <span class="priority-tag">선순위 적용</span>
+          </td><td>출제할 때마다 직접 설정</td><td>최초 설정값 유지</td></tr>
+          <tr><td>처방학습</td><td>자동 출제</td><td>사용자 선택</td></tr>
+          <tr><td>사용자 부담</td><td>높음</td><td>낮음</td></tr>
+        </table>
+      </div>
+    </div>
+  </section>
+
+<!-- ========== PAGE 3 ========== -->
+<section class="page">
+  <div class="container">
+    <div class="card">
+      <h2>[기본 동작 정책 정의]</h2>
+
+        <h3>1) 최초 진입 사용자 기준</h3>
+        <ul>
+          <li>AIDT 첫 진입 시 사용 모드 선택 가이드 팝업 노출</li>
+          <li>기본 선택값은 LITE 모드</li>
+          <li>LITE 모드 유지 ↔ 기본 모드 전환 선택 가능</li>
+        </ul>
+
+        <h3>2) 재진입 사용자 기준</h3>
+        <ul>
+          <li>팝업 재노출 X</li>
+          <li>마지막 설정 모드 유지 적용</li>
+          <li>우측 상단 [설정] 버튼 통해 변경 가능</li>
+        </ul>
+
+        <h3>3) LITE 모드 적용 이전 사용자 기준</h3>
+        <ul>
+          <li>기본값: 기본 모드 유지</li>
+          <li>최초 1회 LITE 안내 배너 또는 가이드 제공 가능</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+<!-- ========== PAGE 4 ========== -->
+<section class="page">
+  <div class="container">
+
+    <h1>AIDT 대문 (최초 진입 시)</h1>
+    <p class="subtitle">
+      첫 사용자가 플랫폼에 처음 진입했을 때 노출되는 화면 예시
+    </p>
+
+    <!-- 상단 헤더 목업 -->
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong>AIDT</strong>
+        <div style="display:flex; gap:12px;">
+          <button class="icon">🎧</button>
+          <button class="icon">🔔</button>
+          <button class="icon" id="openSetting">⚙️</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 메인 영역 -->
+    <div class="card">
+      <h2>가장 최근 수업</h2>
+      <div class="highlight">
+        수업 콘텐츠 영역 (실제 서비스 화면을 단순화한 목업)
+      </div>
+    </div>
+
+    <!-- 안내 문구 -->
+    <div class="card">
+      <h3>💡 기획 포인트</h3>
+      <ul>
+        <li>최초 진입 시 모드 선택 팝업 노출</li>
+        <li>기본 선택값은 LITE 모드</li>
+        <li>선택 이후 재진입 시 팝업 미노출</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 인디케이터 ===== -->
+<div class="indicator">
+  <span class="nav-btn" id="prev">◀</span>
+  <span id="pageText">1 / 4</span>
+  <div class="dots" id="dots"></div>
+  <span class="nav-btn" id="next">▶</span>
+</div>
+
+<script>
+  const pages = document.querySelectorAll('.page');
+  const pageText = document.getElementById('pageText');
+  const dotsContainer = document.getElementById('dots');
+  let current = 0;
+
+  // dots 생성
+  pages.forEach((_, i) => {
+    const dot = document.createElement('span');
+    dotsContainer.appendChild(dot);
+  });
+
+  function render() {
+    pages.forEach((p, i) => {
+      p.classList.toggle('active', i === current);
+      dotsContainer.children[i].classList.toggle('active', i === current);
+    });
+    pageText.textContent = `${current + 1} / ${pages.length}`;
+  }
+
+  document.getElementById('prev').onclick = () => {
+    if (current > 0) {
+      current--;
+      render();
+    }
+  };
+
+  document.getElementById('next').onclick = () => {
+    if (current < pages.length - 1) {
+      current++;
+      render();
+    }
+  };
+
+  render();
+</script>
+
+<!-- ===== 모드 선택 팝업 ===== -->
+<div class="modal" id="modeGuide">
+  <div class="modal-box">
+    <h2>학습 모드 선택</h2>
+    <p class="subtitle">
+      처음 오신 사용자를 위해 추천 모드를 안내합니다.
+    </p>
+
+    <div class="mode-options">
+      <label class="mode active">
+        <input type="radio" name="mode" value="lite" checked />
+        <strong>LITE 모드</strong>
+        <span>핵심만 자동 설정 (추천)</span>
+      </label>
+
+      <label class="mode">
+        <input type="radio" name="mode" value="basic" />
+        <strong>기본 모드</strong>
+        <span>모든 옵션 직접 설정</span>
+      </label>
+    </div>
+
+    <button class="confirm">선택 완료</button>
+  </div>
+</div>
+
+
+<!-- ===== 팝업 JS ===== -->
+<script>
+  const modal = document.getElementById('modeGuide');
+  const settingBtn = document.getElementById('openSetting');
+
+  // 최초 진입 시
+  if (!localStorage.getItem('aidt_mode')) {
+    modal.classList.add('show');
+  }
+
+  // 설정 버튼 클릭
+  if (settingBtn) {
+    settingBtn.onclick = () => modal.classList.add('show');
+  }
+
+  // 모드 선택 UI
+  document.querySelectorAll('.mode').forEach(mode => {
+    mode.onclick = () => {
+      document.querySelectorAll('.mode').forEach(m => m.classList.remove('active'));
+      mode.classList.add('active');
+      mode.querySelector('input').checked = true;
+    };
+  });
+
+  // 선택 완료
+  document.querySelector('.confirm').onclick = () => {
+    const selected = document.querySelector('input[name="mode"]:checked').value;
+    localStorage.setItem('aidt_mode', selected);
+    modal.classList.remove('show');
+  };
+</script>
+</body>
+</html>
